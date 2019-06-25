@@ -8,6 +8,8 @@ struct _DuskEditorAppWindow
     GtkApplicationWindow parent;
 
     GtkWidget * gl_drawing_area;
+
+    GLuint vao;
 };
 
 struct _DuskEditorAppWindowClass
@@ -47,6 +49,25 @@ gl_init(DuskEditorAppWindow * self)
     glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
 
     glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+
+    glGenVertexArrays(1, &self->vao);
+    glBindVertexArray(self->vao);
+
+    static const GLfloat verts[] = {
+        -1.0f, -1.0f, 0.0f,
+        1.0f, -1.0f, 0.0f,
+        0.0f,  1.0f, 0.0f,
+    };
+
+    GLuint vbo;
+    glGenBuffers(1, &vbo);
+
+    glEnableVertexAttribArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(verts), verts, GL_STATIC_DRAW);
+    glVertexAttribPointer(0, sizeof(verts) / sizeof(verts[0]) / 3, GL_FLOAT, GL_FALSE, 0, nullptr);
+    
+    glBindVertexArray(0);
 }
 
 static void
@@ -59,6 +80,11 @@ static gboolean
 gl_draw(DuskEditorAppWindow * self)
 {
     glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+
+    glBindVertexArray(self->vao);
+    glDrawArrays(GL_TRIANGLES, 0, 3);
+    glBindVertexArray(0);
+
     return true;
 }
 
