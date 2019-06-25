@@ -81,6 +81,7 @@ static void
 dusk_editor_app_window_init(_DuskEditorAppWindow * self)
 {
     gtk_widget_init_template(GTK_WIDGET(self));
+    gtk_gl_area_set_required_version(GTK_GL_AREA(self->gl_drawing_area), 4, 0);
 }
 
 GtkWidget *
